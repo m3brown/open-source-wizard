@@ -13,3 +13,7 @@
   roles:
     - role: django
       sudo: yes
+    - role: nginx
+      sudo: yes
+    - role: postgresql
+      sudo: yes

@@ -1,1 +1,14 @@
 root_dir: /vagrant
+
+postgresql_databases:
+  - name: devdash
+
+postgresql_users:
+  - name: devdashuser
+    pass: devdashpass
+    encrypted: no   # denotes if the password is already encrypted
+
+postgresql_user_privileges:
+  - name: devdashuser
+    db: devdash
+    priv: "ALL"

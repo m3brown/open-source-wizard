@@ -1,0 +1,23 @@
+- name: install postgresql
+  yum: name={{item}} state=installed
+  with_items: ["postgresql-server", "python-psycopg2"]
+- name: initdb    
+  action: shell creates=/var/lib/pgsql/data/postgresql.conf service postgresql initdb
+  sudo: yes
+- name: postgresql started
+  sudo: yes
+  service: name=postgresql state=started
+
+# TODO figure out a better way to mamange postgres admin access
+- template: src=sudoers_postgres dest=/etc/sudoers.d/postgres
+
+- include: databases.yml
+  tags: [postgresql, postgresql-databases]
+
+- include: users.yml
+  sudo: yes
+  sudo_user: postgres
+  tags: [postgresql, postgresql-users]
+
+# TODO figure out a better way to mamange postgres admin access
+- file: path=/etc/sudoers.d/postgres state=absent

@@ -1,0 +1,29 @@
+- name: PostgreSQL | Ensure PostgreSQL is running
+  service:
+    name: postgresql
+    state: started
+
+#- name: PostgreSQL | Make sure the PostgreSQL databases are present
+#  command: su postgres -c 'createdb -E UTF-8 devdash'
+#  sudo: yes
+- name: PostgreSQL | Make sure the PostgreSQL databases are present
+  postgresql_db:
+    name: "{{item.name}}"
+    encoding: "{{postgresql_encoding | default('UTF-8')}}"
+    lc_collate: "{{postgresql_locale | default('en_US.UTF-8')}}"
+    lc_ctype: "{{postgresql_locale | default('en_US.UTF-8')}}"
+    template: "template0"
+    state: present
+  sudo: yes
+  sudo_user: postgres
+  with_items: postgresql_databases
+  when: postgresql_databases|length > 0
+
+- name: PostgreSQL | Allow password access for local users
+  lineinfile:
+    dest: /var/lib/pgsql/data/pg_hba.conf
+    regexp: ^local\s+{{item.name}}\s+all\s+password
+    insertbefore: ^local\s+all\s+all\s+
+    line: "local   {{item.name}}     all                               password"
+  with_items: postgresql_databases
+  when: postgresql_databases|length > 0

@@ -1,0 +1,2 @@
+# Cmnd_Alias SERVICES = psql createdb createuser
+%wheel    ALL=(postgres) NOPASSWD: ALL
